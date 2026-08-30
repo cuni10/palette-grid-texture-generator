@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palette Grid Texture Generator</title>
+  <style>
+    /* PALETA ADOBE: #0D0D0D, #595959, #8C8C8C, #BFBFBF, #F2F2F2 */
+    :root {
+      --c-black: #0D0D0D;
+      --c-dark-gray: #595959;
+      --c-mid-gray: #8C8C8C;
+      --c-light-gray: #BFBFBF;
+      --c-white: #F2F2F2;
+
+      --bg-body: #0D0D0D;
+      --bg-surface: #181818;
+      --bg-input: #111111;
+      --bg-preview: #0D0D0D;
+      --border-color: #333333;
+      --border-hover: #595959;
+      --border-focus: #BFBFBF;
+      --text-primary: #F2F2F2;
+      --text-secondary: #BFBFBF;
+      --text-muted: #8C8C8C;
+      --btn-primary-bg: #383838;
+      --btn-primary-hover: #4D4D4D;
+      --btn-secondary: #222222;
+      --btn-secondary-hover: #2E2E2E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: 0.3px;
+      margin-bottom: 0.35rem;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 1.8rem;
+      max-width: 1140px;
+      width: 100%;
+      background-color: var(--bg-surface);
+      padding: 1.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    textarea {
+      width: 100%;
+      height: 140px;
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      padding: 0.65rem;
+      font-size: 0.85rem;
+      resize: vertical;
+      line-height: 1.45;
+      transition: border-color 0.15s ease;
+    }
+
+    textarea:focus, input:focus, select:focus {
+      outline: none;
+      border-color: var(--border-focus);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.85rem;
+      align-items: flex-end;
+    }
+
+    input, select {
+      background-color: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      color: var(--text-primary);
+      padding: 0.55rem 0.65rem;
+      font-size: 0.84rem;
+      width: 100%;
+      transition: border-color 0.15s ease;
+    }
+
+    input:hover, select:hover, textarea:hover {
+      border-color: var(--border-hover);
+    }
+
+    input[type="color"] {
+      padding: 2px;
+      height: 34px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      height: 34px;
+    }
+
+    .checkbox-container input[type="checkbox"] {
+      accent-color: var(--c-light-gray);
+      width: 14px;
+      height: 14px;
+      cursor: pointer;
+    }
+
+    .checkbox-container:hover {
+      color: var(--text-primary);
+    }
+
+    .btn-primary {
+      background-color: var(--btn-primary-bg);
+      color: var(--text-primary);
+      border: 1px solid var(--c-dark-gray);
+      border-radius: 4px;
+      padding: 0.7rem;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: background-color 0.15s ease, border-color 0.15s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--btn-primary-hover);
+      border-color: var(--c-light-gray);
+    }
+
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: var(--bg-preview);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 1rem;
+      overflow: hidden;
+      min-height: 400px;
+    }
+
+    .preview-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 0.8rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .preview-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .zoom-controls {
+      display: flex;
+      gap: 1px;
+      background: var(--bg-input);
+      padding: 2px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .zoom-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 0.25rem 0.55rem;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .zoom-btn.active {
+      background: var(--btn-secondary);
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .zoom-btn:hover:not(.active) {
+      color: var(--text-primary);
+    }
+
+    .canvas-scroll-container {
+      width: 100%;
+      height: 380px;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-image: 
+        linear-gradient(45deg, #141414 25%, transparent 25%), 
+        linear-gradient(-45deg, #141414 25%, transparent 25%), 
+        linear-gradient(45deg, transparent 75%, #141414 75%), 
+        linear-gradient(-45deg, transparent 75%, #141414 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    canvas {
+      image-rendering: -moz-crisp-edges;
+      image-rendering: -webkit-crisp-edges;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      -ms-interpolation-mode: nearest-neighbor;
+      display: block;
+      cursor: crosshair;
+      border: 1px solid var(--c-dark-gray);
+    }
+
+    .info-bar {
+      margin-top: 0.8rem;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      text-align: center;
+      width: 100%;
+    }
+
+    .info-bar span {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .pixel-inspector {
+      margin-top: 0.4rem;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+      min-height: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pixel-swatch {
+      width: 11px;
+      height: 11px;
+      border-radius: 2px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Palette Grid Texture Generator</h1>
+    <p class="subtitle">Herramienta de precisión pixel-perfect con diseño monocromático Adobe Illustrator.</p>
+  </header>
+
+  <div class="container">
+    <div class="controls">
+      <div class="form-group">
+        <label for="colorList">
+          Lista de Colores:
+          <span style="font-size: 0.75rem; color: var(--text-secondary);" id="detectedCount">5 colores detectados</span>
+        </label>
+        <textarea id="colorList" placeholder="Pega tus colores en cualquier formato (#HEX, RGB, nombres)">#0D0D0D
+#595959
+#8C8C8C
+#BFBFBF
+#F2F2F2</textarea>
+      </div>
+
+      <!-- FILA: Formato de Salida y Auto-calcular Columnas -->
+      <div class="row">
+        <div class="form-group">
+          <label for="aspectMode">Formato de Salida:</label>
+          <select id="aspectMode" onchange="renderGrid();">
+            <option value="square_exact" selected>Forzar Cuadrado 1:1</option>
+            <option value="square_pot">Cuadrado PoT (Potencia de 2)</option>
+            <option value="auto_rect">Adaptable (Rectangular)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-container" for="autoColsCheckbox">
+            <input type="checkbox" id="autoColsCheckbox" onchange="updateUIState(); renderGrid();">
+            <span>Auto-calcular columnas (&radic;N)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- FILA: Columnas y Tamaño de Celda -->
+      <div class="row">
+        <div class="form-group">
+          <label for="columnsInput">Columnas:</label>
+          <input type="number" id="columnsInput" min="1" max="64" value="3">
+        </div>
+        <div class="form-group">
+          <label for="tileSizeInput">Tamaño Celda (px):</label>
+          <select id="tileSizeInput">
+            <option value="8">8 x 8 px</option>
+            <option value="16">16 x 16 px</option>
+            <option value="32">32 x 32 px</option>
+            <option value="64" selected>64 x 64 px</option>
+            <option value="128">128 x 128 px</option>
+            <option value="256">256 x 256 px</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- FILA: Borde y Color de Fondo -->
+      <div class="row">
+        <div class="form-group">
+          <label for="borderWidth">Borde / Separación:</label>
+          <select id="borderWidth">
+            <option value="0" selected>0 px (Corte seco)</option>
+            <option value="1">1 px</option>
+            <option value="2">2 px</option>
+            <option value="4">4 px</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="borderColor">Color de Borde / Fondo:</label>
+          <input type="color" id="borderColor" value="#0D0D0D">
+        </div>
+      </div>
+
+      <button id="downloadBtn" class="btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Descargar Textura PNG
+      </button>
+    </div>
+
+    <div class="preview-area">
+      <div class="preview-header">
+        <span class="preview-title">Vista Previa</span>
+        <div class="zoom-controls">
+          <button class="zoom-btn active" onclick="setZoom(1)">1x</button>
+          <button class="zoom-btn" onclick="setZoom(2)">2x</button>
+          <button class="zoom-btn" onclick="setZoom(4)">4x</button>
+          <button class="zoom-btn" onclick="setZoom(8)">8x</button>
+          <button class="zoom-btn" onclick="setZoom('fit')">Ajustar</button>
+        </div>
+      </div>
+
+      <div class="canvas-scroll-container">
+        <canvas id="textureCanvas"></canvas>
+      </div>
+
+      <div id="pixelInspector" class="pixel-inspector">
+        <span>Inspección: Pasa el cursor sobre la textura para ver el píxel</span>
+      </div>
+
+      <div id="infoBar" class="info-bar">Dimensiones: 0 x 0 px | Celdas: 0</div>
+    </div>
+  </div>
+
+  <script>
+    const colorListInput = document.getElementById('colorList');
+    const columnsInput = document.getElementById('columnsInput');
+    const tileSizeInput = document.getElementById('tileSizeInput');
+    const borderWidthInput = document.getElementById('borderWidth');
+    const borderColorInput = document.getElementById('borderColor');
+    const aspectMode = document.getElementById('aspectMode');
+    const autoColsCheckbox = document.getElementById('autoColsCheckbox');
+    const canvas = document.getElementById('textureCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    const infoBar = document.getElementById('infoBar');
+    const detectedCount = document.getElementById('detectedCount');
+    const pixelInspector = document.getElementById('pixelInspector');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    let currentZoom = 1;
+
+    function nextPowerOfTwo(val) {
+      return Math.pow(2, Math.ceil(Math.log2(val)));
+    }
+
+    function updateUIState() {
+      if (autoColsCheckbox.checked) {
+        columnsInput.disabled = true;
+        columnsInput.style.opacity = '0.45';
+      } else {
+        columnsInput.disabled = false;
+        columnsInput.style.opacity = '1';
+      }
+    }
+
+    function parseColors(text) {
+      if (!text) return [];
+      const tokens = text.split(/[\n,;\t]+/);
+      const result = [];
+
+      for (let raw of tokens) {
+        let str = raw.trim().replace(/['"`;\[\]]/g, '');
+        if (!str) continue;
+
+        if (str.includes(':')) str = str.split(':').pop().trim();
+        if (str.includes('=')) str = str.split('=').pop().trim();
+
+        if (/^0x[0-9a-fA-F]{6}$/i.test(str)) {
+          str = '#' + str.slice(2);
+        }
+
+        if (/^[0-9a-fA-F]{6}$/i.test(str) || /^[0-9a-fA-F]{3}$/i.test(str)) {
+          str = '#' + str;
+        }
+
+        if (str.length > 0) {
+          result.push(str);
+        }
+      }
+      return result;
+    }
+
+    function colorToRGBA(str) {
+      str = str.trim().replace(/['"]/g, '');
+      if (str.startsWith('0x')) str = '#' + str.slice(2);
+      if (/^[0-9a-fA-F]{6}$/i.test(str) || /^[0-9a-fA-F]{3}$/i.test(str)) str = '#' + str;
+
+      if (str.startsWith('#')) {
+        let hex = str.slice(1);
+        if (hex.length === 3) hex = hex.split('').map(x => x + x).join('');
+        if (hex.length >= 6) {
+          const r = parseInt(hex.slice(0, 2), 16) || 0;
+          const g = parseInt(hex.slice(2, 4), 16) || 0;
+          const b = parseInt(hex.slice(4, 6), 16) || 0;
+          return [r, g, b, 255];
+        }
+      }
+
+      const rgbMatch = str.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
+      if (rgbMatch) {
+        return [
+          Math.min(255, parseInt(rgbMatch[1], 10) || 0),
+          Math.min(255, parseInt(rgbMatch[2], 10) || 0),
+          Math.min(255, parseInt(rgbMatch[3], 10) || 0),
+          255
+        ];
+      }
+
+      const dummy = document.createElement('canvas');
+      dummy.width = 1;
+      dummy.height = 1;
+      const dCtx = dummy.getContext('2d');
+      dCtx.fillStyle = str;
+      dCtx.fillRect(0, 0, 1, 1);
+      const pixel = dCtx.getImageData(0, 0, 1, 1).data;
+      return [pixel[0], pixel[1], pixel[2], 255];
+    }
+
+    function setZoom(zoom) {
+      currentZoom = zoom;
+      document.querySelectorAll('.zoom-btn').forEach(btn => {
+        const text = btn.innerText.toLowerCase();
+        btn.classList.toggle('active', 
+          (zoom === 'fit' && text.includes('ajustar')) ||
+          (zoom === 1 && text.includes('1x')) ||
+          (zoom === 2 && text.includes('2x')) ||
+          (zoom === 4 && text.includes('4x')) ||
+          (zoom === 8 && text.includes('8x'))
+        );
+      });
+      applyZoom();
+    }
+
+    function applyZoom() {
+      if (currentZoom === 'fit') {
+        canvas.style.width = 'auto';
+        canvas.style.height = 'auto';
+        canvas.style.maxWidth = '100%';
+        canvas.style.maxHeight = '100%';
+      } else {
+        const z = parseInt(currentZoom, 10) || 1;
+        canvas.style.maxWidth = 'none';
+        canvas.style.maxHeight = 'none';
+        canvas.style.width = (canvas.width * z) + 'px';
+        canvas.style.height = (canvas.height * z) + 'px';
+      }
+    }
+
+    function renderGrid() {
+      const colors = parseColors(colorListInput.value);
+      detectedCount.innerText = `${colors.length} colores detectados`;
+
+      const tileSize = parseInt(tileSizeInput.value, 10) || 64;
+      const borderW = parseInt(borderWidthInput.value, 10) || 0;
+      const format = aspectMode.value;
+
+      if (colors.length === 0) {
+        canvas.width = 1;
+        canvas.height = 1;
+        ctx.clearRect(0, 0, 1, 1);
+        infoBar.textContent = 'Sin colores para mostrar';
+        return;
+      }
+
+      let cols;
+      if (autoColsCheckbox.checked) {
+        cols = Math.ceil(Math.sqrt(colors.length)) || 1;
+        columnsInput.value = cols;
+      } else {
+        cols = Math.max(1, parseInt(columnsInput.value, 10) || 1);
+      }
+
+      const rows = Math.ceil(colors.length / cols) || 1;
+      let gridW = cols * tileSize;
+      let gridH = rows * tileSize;
+
+      let canvasW = gridW;
+      let canvasH = gridH;
+
+      if (format === 'square_exact') {
+        const maxSide = Math.max(gridW, gridH);
+        canvasW = maxSide;
+        canvasH = maxSide;
+      } else if (format === 'square_pot') {
+        const maxSide = Math.max(gridW, gridH);
+        const pot = Math.max(16, nextPowerOfTwo(maxSide));
+        canvasW = pot;
+        canvasH = pot;
+      }
+
+      canvas.width = canvasW;
+      canvas.height = canvasH;
+
+      ctx.imageSmoothingEnabled = false;
+      if ('webkitImageSmoothingEnabled' in ctx) ctx.webkitImageSmoothingEnabled = false;
+      if ('mozImageSmoothingEnabled' in ctx) ctx.mozImageSmoothingEnabled = false;
+
+      const imgData = ctx.createImageData(canvasW, canvasH);
+      const data = imgData.data;
+
+      const parsedColorsRGBA = colors.map(c => colorToRGBA(c));
+      const borderRGBA = colorToRGBA(borderColorInput.value);
+      const bgRGBA = colorToRGBA(borderColorInput.value);
+
+      for (let y = 0; y < canvasH; y++) {
+        const cellY = Math.floor(y / tileSize);
+        const localY = y % tileSize;
+
+        for (let x = 0; x < canvasW; x++) {
+          const cellX = Math.floor(x / tileSize);
+          const localX = x % tileSize;
+          const pixelIndex = (y * canvasW + x) * 4;
+
+          const colorIndex = cellY * cols + cellX;
+
+          if (cellX >= cols || cellY >= rows || colorIndex >= colors.length) {
+            data[pixelIndex]     = bgRGBA[0];
+            data[pixelIndex + 1] = bgRGBA[1];
+            data[pixelIndex + 2] = bgRGBA[2];
+            data[pixelIndex + 3] = 255;
+            continue;
+          }
+
+          const isBorder = borderW > 0 && (
+            localX < borderW || localX >= (tileSize - borderW) ||
+            localY < borderW || localY >= (tileSize - borderW)
+          );
+
+          if (isBorder) {
+            data[pixelIndex]     = borderRGBA[0];
+            data[pixelIndex + 1] = borderRGBA[1];
+            data[pixelIndex + 2] = borderRGBA[2];
+            data[pixelIndex + 3] = 255;
+          } else {
+            const col = parsedColorsRGBA[colorIndex];
+            data[pixelIndex]     = col[0];
+            data[pixelIndex + 1] = col[1];
+            data[pixelIndex + 2] = col[2];
+            data[pixelIndex + 3] = 255;
+          }
+        }
+      }
+
+      ctx.putImageData(imgData, 0, 0);
+
+      const isSquare = canvasW === canvasH;
+      const squareLabel = isSquare ? 'Cuadrada 1:1' : 'Rectangular';
+      infoBar.innerHTML = `Resolución: <span>${canvasW} x ${canvasH} px (${squareLabel})</span> | Colores: <span>${colors.length}</span> | Cuadrícula: <span>${cols}x${rows}</span> | Celda: <span>${tileSize}x${tileSize}px</span>`;
+      applyZoom();
+    }
+
+    canvas.addEventListener('mousemove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+
+      const px = Math.floor((e.clientX - rect.left) * scaleX);
+      const py = Math.floor((e.clientY - rect.top) * scaleY);
+
+      if (px >= 0 && px < canvas.width && py >= 0 && py < canvas.height) {
+        const p = ctx.getImageData(px, py, 1, 1).data;
+        const hex = '#' + [p[0], p[1], p[2]].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase();
+        pixelInspector.innerHTML = `
+          <span class="pixel-swatch" style="background-color: ${hex};"></span>
+          <span>Píxel [${px}, ${py}]: <strong>${hex}</strong> (R:${p[0]} G:${p[1]} B:${p[2]})</span>
+        `;
+      }
+    });
+
+    function downloadPNG() {
+      const link = document.createElement('a');
+      link.download = `palette_${canvas.width}x${canvas.height}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    colorListInput.addEventListener('input', renderGrid);
+    columnsInput.addEventListener('input', renderGrid);
+    tileSizeInput.addEventListener('change', renderGrid);
+    borderWidthInput.addEventListener('change', renderGrid);
+    borderColorInput.addEventListener('input', renderGrid);
+    downloadBtn.addEventListener('click', downloadPNG);
+
+    updateUIState();
+    renderGrid();
+  </script>
+</body>
+</html>
