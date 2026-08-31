@@ -1,12 +1,12 @@
 # 🎨 Palette Grid Texture Generator
 
-Herramienta web pixel-perfect para generar texturas de paletas de color y cuadrículas UV para motores de videojuegos (**Roblox**, **Blender**, **Unity**, **Unreal Engine**) y modelado 3D low-poly.
+Herramienta web para generar texturas de paletas de color para motores de videojuegos (**Roblox**, **Blender**, **Unity**, **Unreal Engine**) y modelado 3D low-poly.
 
 ---
 
 ## ✨ Características Principales
 
-* **Formato Cuadrado 1:1:** Opción para generar texturas perfectamente cuadradas ($1:1$) o en resoluciones **Potencia de 2 (PoT)** ($128\times128$, $256\times256$, $512\times512$, $1024\times1024$, etc.) requeridas por motores 3D.
+* **Formato Cuadrado 1:1 / Adaptable:** Opción para generar texturas cuadradas ($1:1$) o adaptables (rectangulares) según la cantidad de colores y columnas.
 * **Cálculo Automático de Columnas:** Distribuye automáticamente los colores en una cuadrícula simétrica.
 * **Controles de Zoom Nativo:** Previsualización en resoluciones enteras ($1\text{x}$, $2\text{x}$, $4\text{x}$, $8\text{x}$ y Ajustar).
 
