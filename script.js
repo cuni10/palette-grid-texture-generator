@@ -135,7 +135,11 @@ function renderGrid() {
 
   let cols;
   if (autoColsCheckbox.checked) {
-    cols = Math.ceil(Math.sqrt(colors.length)) || 1;
+    if (format === 'rect_2_1') {
+      cols = Math.ceil(Math.sqrt(colors.length * 2)) || 1;
+    } else {
+      cols = Math.ceil(Math.sqrt(colors.length)) || 1;
+    }
     columnsInput.value = cols;
   } else {
     cols = Math.max(1, parseInt(columnsInput.value, 10) || 1);
@@ -152,6 +156,9 @@ function renderGrid() {
     const maxSide = Math.max(gridW, gridH);
     canvasW = maxSide;
     canvasH = maxSide;
+  } else if (format === 'rect_2_1') {
+    canvasH = Math.max(gridH, Math.ceil(gridW / 2));
+    canvasW = canvasH * 2;
   }
 
   canvas.width = canvasW;
@@ -209,9 +216,15 @@ function renderGrid() {
 
   ctx.putImageData(imgData, 0, 0);
 
-  const isSquare = canvasW === canvasH;
-  const squareLabel = isSquare ? 'Cuadrada 1:1' : 'Rectangular';
-  infoBar.innerHTML = `Resolución: <span>${canvasW} x ${canvasH} px (${squareLabel})</span> | Colores: <span>${colors.length}</span> | Cuadrícula: <span>${cols}x${rows}</span> | Celda: <span>${tileSize}x${tileSize}px</span>`;
+  let formatLabel = 'Adaptable';
+  if (format === 'square_exact') {
+    formatLabel = 'Cuadrada 1:1';
+  } else if (format === 'rect_2_1') {
+    formatLabel = 'Rectangular 2:1';
+  } else if (canvasW === canvasH) {
+    formatLabel = 'Cuadrada 1:1';
+  }
+  infoBar.innerHTML = `Resolución: <span>${canvasW} x ${canvasH} px (${formatLabel})</span> | Colores: <span>${colors.length}</span> | Cuadrícula: <span>${cols}x${rows}</span> | Celda: <span>${tileSize}x${tileSize}px</span>`;
   applyZoom();
 }
 

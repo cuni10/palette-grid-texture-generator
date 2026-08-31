@@ -6,7 +6,7 @@ Herramienta web para generar texturas de paletas de color para motores de videoj
 
 ## ✨ Características Principales
 
-* **Formato Cuadrado 1:1 / Adaptable:** Opción para generar texturas cuadradas ($1:1$) o adaptables (rectangulares) según la cantidad de colores y columnas.
+* **Formatos de Salida:** Opción para forzar texturas **Cuadradas (1:1)**, **Rectangulares (2:1)** o **Adaptables** según la cuadrícula.
 * **Cálculo Automático de Columnas:** Distribuye automáticamente los colores en una cuadrícula simétrica.
 * **Controles de Zoom Nativo:** Previsualización en resoluciones enteras ($1\text{x}$, $2\text{x}$, $4\text{x}$, $8\text{x}$ y Ajustar).
 

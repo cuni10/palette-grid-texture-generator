@@ -40,7 +40,12 @@ body {
 }
 
 header {
-  text-align: center;
+  position: relative;
+  max-width: 1140px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 2rem;
 }
 
@@ -49,12 +54,37 @@ h1 {
   font-weight: 600;
   color: var(--text-primary);
   letter-spacing: 0.3px;
-  margin-bottom: 0.35rem;
 }
 
-p.subtitle {
+.github-link {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--text-muted);
-  font-size: 0.85rem;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-surface);
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  text-decoration: none;
+}
+
+.github-link:hover {
+  color: var(--text-primary);
+  border-color: var(--border-focus);
+  background: var(--btn-secondary);
+}
+
+@media (max-width: 600px) {
+  header {
+    justify-content: space-between;
+  }
+
+  .github-link {
+    position: static;
+  }
 }
 
 .container {
