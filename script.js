@@ -11,6 +11,9 @@ const infoBar = document.getElementById('infoBar');
 const detectedCount = document.getElementById('detectedCount');
 const pixelInspector = document.getElementById('pixelInspector');
 const downloadBtn = document.getElementById('downloadBtn');
+const colorPicker = document.getElementById('colorPicker');
+const colorHexVal = document.getElementById('colorHexVal');
+const addColorBtn = document.getElementById('addColorBtn');
 
 let currentZoom = 1;
 
@@ -259,6 +262,22 @@ tileSizeInput.addEventListener('change', renderGrid);
 borderWidthInput.addEventListener('change', renderGrid);
 borderColorInput.addEventListener('input', renderGrid);
 downloadBtn.addEventListener('click', downloadPNG);
+
+if (colorPicker && colorHexVal) {
+  colorPicker.addEventListener('input', () => {
+    colorHexVal.textContent = colorPicker.value.toUpperCase();
+  });
+}
+
+if (addColorBtn && colorPicker) {
+  addColorBtn.addEventListener('click', () => {
+    const colorToAdd = colorPicker.value.toUpperCase();
+    const currentText = colorListInput.value.trimEnd();
+    colorListInput.value = currentText ? `${currentText}\n${colorToAdd}` : colorToAdd;
+    colorListInput.scrollTop = colorListInput.scrollHeight;
+    renderGrid();
+  });
+}
 
 updateUIState();
 renderGrid();
